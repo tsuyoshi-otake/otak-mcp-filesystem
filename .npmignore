@@ -1,0 +1,15 @@
+src/
+*.ts
+!dist/**/*.d.ts
+tsconfig.json
+.env
+.env.example
+.gitignore
+nodemon.json
+*.log
+test-cors.html
+server.log
+PERFORMANCE.md
+.git/
+node_modules/
+*.tmp

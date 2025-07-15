@@ -1,10 +1,13 @@
 {
   "name": "@tsuyoshi-otake/mcp-filesystem",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for filesystem operations with SSE/HTTP streaming support",
   "main": "dist/index.js",
   "bin": {
     "mcp-filesystem": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   },
   "files": [
     "dist/**/*",
@@ -23,7 +26,7 @@
     "dev:http": "nodemon --exec tsx src/http-server.ts",
     "dev:mcp": "nodemon --exec tsx src/mcp-http-server.ts",
     "dev:optimized": "nodemon --exec tsx src/index-optimized.ts",
-    "build": "tsc",
+    "build": "node scripts/build.js",
     "start": "node dist/index.js",
     "start:http": "node dist/http-server.js",
     "start:mcp": "node dist/mcp-http-server.js",
@@ -36,10 +39,13 @@
   "type": "commonjs",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
-    "@types/express": "^5.0.3",
-    "@types/node": "^24.0.14",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
+    "tsx": "^4.20.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.14",
     "nodemon": "^3.1.10",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
