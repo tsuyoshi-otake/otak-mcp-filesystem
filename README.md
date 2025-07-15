@@ -41,6 +41,21 @@ JSON形式の引数で `allowedDirectory` を指定することで、アクセ�
 
 ## インストール
 
+### グローバルインストール（開発中）
+
+```bash
+# GitHubから直接インストール
+npm install -g github:tsuyoshi-otake/otak-mcp-filesystem
+
+# または、リポジトリをクローンしてから
+git clone https://github.com/tsuyoshi-otake/otak-mcp-filesystem.git
+cd otak-mcp-filesystem
+npm install
+npm link
+```
+
+### ローカル開発
+
 ```bash
 npm install
 ```
@@ -66,10 +81,8 @@ npm run dev -- '{"allowedDirectory": "/path/to/allowed/directory"}'
 {
   "mcpServers": {
     "filesystem": {
-      "command": "npx",
-      "args": [
-        "@tsuyoshi-otake/mcp-filesystem"
-      ]
+      "command": "otak-mcp-filesystem",
+      "args": []
     }
   }
 }
@@ -81,9 +94,8 @@ npm run dev -- '{"allowedDirectory": "/path/to/allowed/directory"}'
 {
   "mcpServers": {
     "filesystem": {
-      "command": "npx",
+      "command": "otak-mcp-filesystem",
       "args": [
-        "@tsuyoshi-otake/mcp-filesystem",
         "{\"allowedDirectory\": \"C:/Users/username/Documents/MyProject\"}"
       ]
     }
