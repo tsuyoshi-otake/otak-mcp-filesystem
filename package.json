@@ -37,8 +37,7 @@
     "start:mcp": "node dist/mcp-http-server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build",
-    "postinstall": "node scripts/postinstall.js",
-    "preuninstall": "node scripts/uninstall.js"
+    "prepare": "npm run build"
   },
   "keywords": ["mcp", "model-context-protocol", "filesystem", "sse", "streaming"],
   "author": "Tsuyoshi Otake",
