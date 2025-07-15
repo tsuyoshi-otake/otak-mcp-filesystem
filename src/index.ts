@@ -28,14 +28,19 @@ async function setupWindowsAutoStart(action: string, allowedDirectory: string) {
   switch (action) {
     case '--install-startup':
       // PowerShellでショートカット作成
+      const isDev = __filename.endsWith('.ts');
+      const vbsName = isDev ? 'start-hidden-dev.vbs' : 'start-hidden.vbs';
+      const vbsPath = path.join(path.dirname(__filename), '..', 'scripts', vbsName);
+      
       const script = `
         $WshShell = New-Object -ComObject WScript.Shell
         $Shortcut = $WshShell.CreateShortcut("${shortcutPath}")
-        $Shortcut.TargetPath = "node"
-        $Shortcut.Arguments = "${__filename} '{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}'"
-        $Shortcut.WorkingDirectory = "${path.dirname(__filename)}"
+        $Shortcut.TargetPath = "wscript.exe"
+        $Shortcut.Arguments = "\\"${vbsPath}\\" \\"{\\\\\\"allowedDirectory\\\\\\":\\\\\\"${allowedDirectory.replace(/\\/g, '\\\\\\\\')}\\\\\\"}\\""
+        $Shortcut.WorkingDirectory = "${path.dirname(path.dirname(__filename))}"
         $Shortcut.IconLocation = "shell32.dll,3"
         $Shortcut.Description = "MCP Filesystem Server"
+        $Shortcut.WindowStyle = 7
         $Shortcut.Save()
       `;
       
@@ -182,14 +187,20 @@ async function checkAndSetupAutoStart() {
     // 未登録なので自動登録
     console.error('🔧 Windows自動起動に登録しています...');
     
+    // VBSファイルのパスを取得（開発版かビルド版かで切り替え）
+    const isDev = __filename.endsWith('.ts');
+    const vbsName = isDev ? 'start-hidden-dev.vbs' : 'start-hidden.vbs';
+    const vbsPath = path.join(path.dirname(__filename), '..', 'scripts', vbsName);
+    
     const script = `
       $WshShell = New-Object -ComObject WScript.Shell
       $Shortcut = $WshShell.CreateShortcut("${shortcutPath}")
-      $Shortcut.TargetPath = "node"
-      $Shortcut.Arguments = "${__filename} '{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}'"
-      $Shortcut.WorkingDirectory = "${path.dirname(__filename)}"
+      $Shortcut.TargetPath = "wscript.exe"
+      $Shortcut.Arguments = "\\"${vbsPath}\\" \\"{\\\\\\"allowedDirectory\\\\\\":\\\\\\"${allowedDirectory.replace(/\\/g, '\\\\\\\\')}\\\\\\"}\\""
+      $Shortcut.WorkingDirectory = "${path.dirname(path.dirname(__filename))}"
       $Shortcut.IconLocation = "shell32.dll,3"
       $Shortcut.Description = "MCP Filesystem Server"
+      $Shortcut.WindowStyle = 7
       $Shortcut.Save()
     `;
     
