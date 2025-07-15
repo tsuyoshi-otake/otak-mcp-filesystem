@@ -209,7 +209,7 @@ async function checkAndSetupAutoStart() {
       console.error(`📁 許可ディレクトリ: ${allowedDirectory}`);
       console.error('');
       console.error('🔓 自動起動を解除するには:');
-      console.error('   npx @tsuyoshi-otake/mcp-filesystem --uninstall-startup');
+      console.error('   otak-mcp-filesystem --uninstall-startup');
       console.error('');
     } catch (error) {
       // 登録失敗（権限不足など）- エラーは表示しない

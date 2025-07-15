@@ -199,7 +199,7 @@ Windowsでは、初回実行時に自動的にスタートアップフォルダ�
 
 ```bash
 # 方法1: 自動起動を解除してからアンインストール（推奨）
-mcp-filesystem-uninstall
+otak-mcp-filesystem-uninstall
 npm uninstall -g @tsuyoshi-otake/mcp-filesystem
 
 # 方法2: 直接アンインストール（preuninstallスクリプトが動作する場合）
@@ -210,23 +210,23 @@ npm uninstall -g @tsuyoshi-otake/mcp-filesystem
 
 ```bash
 # パッケージは残したまま自動起動だけ解除
-npx @tsuyoshi-otake/mcp-filesystem --uninstall-startup
+otak-mcp-filesystem --uninstall-startup
 ```
 
 ### 手動登録オプション
 
 ```bash
 # スタートアップフォルダに手動登録
-npx @tsuyoshi-otake/mcp-filesystem --install-startup
+otak-mcp-filesystem --install-startup
 
 # カスタムディレクトリを指定して登録
-npx @tsuyoshi-otake/mcp-filesystem --install-startup '{"allowedDirectory":"C:/Users/username/Documents/MyProject"}'
+otak-mcp-filesystem --install-startup '{"allowedDirectory":"C:/Users/username/Documents/MyProject"}'
 
 # タスクスケジューラに登録（より詳細な制御が必要な場合）
-npx @tsuyoshi-otake/mcp-filesystem --install-task
+otak-mcp-filesystem --install-task
 
 # タスクスケジューラから削除
-npx @tsuyoshi-otake/mcp-filesystem --uninstall-task
+otak-mcp-filesystem --uninstall-task
 ```
 
 ### 登録状態の確認

@@ -1,11 +1,11 @@
 {
   "name": "@tsuyoshi-otake/mcp-filesystem",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "MCP server for filesystem operations with SSE/HTTP streaming support",
   "main": "dist/index.js",
   "bin": {
-    "mcp-filesystem": "./bin/mcp-filesystem.js",
-    "mcp-filesystem-uninstall": "./bin/uninstall.js"
+    "otak-mcp-filesystem": "./bin/mcp-filesystem.js",
+    "otak-mcp-filesystem-uninstall": "./bin/uninstall.js"
   },
   "engines": {
     "node": ">=16.0.0"
