@@ -1,5 +1,8 @@
 # Filesystem MCP Server
 
+[![CI](https://github.com/tsuyoshi-otake/otak-mcp-filesystem/actions/workflows/ci.yml/badge.svg)](https://github.com/tsuyoshi-otake/otak-mcp-filesystem/actions/workflows/ci.yml)
+[![Release](https://github.com/tsuyoshi-otake/otak-mcp-filesystem/actions/workflows/release.yml/badge.svg)](https://github.com/tsuyoshi-otake/otak-mcp-filesystem/actions/workflows/release.yml)
+
 ファイルシステム操作をサポートするMCP (Model Context Protocol) サーバーの実装です。SSEとHTTP Streamingに対応しています。
 
 ## セキュリティ機能
