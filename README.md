@@ -207,21 +207,16 @@ npm start        # stdio版
 npm start:http   # HTTP版
 ```
 
-## Windows自動起動
+## アンインストール
 
-### 自動登録
-
-Windowsでは、初回実行時に自動的にスタートアップフォルダに登録されます。これにより、Windows起動時に自動的にMCPサーバーが開始されます。
-
-### アンインストール
+### 完全アンインストール（推奨）
 
 ```bash
-# 方法1: 自動起動を解除してからアンインストール（推奨）
+# 1. 自動起動を解除
 otak-mcp-filesystem-uninstall
-npm uninstall -g @tsuyoshi-otake/mcp-filesystem
 
-# 方法2: 直接アンインストール（preuninstallスクリプトが動作する場合）
-npm uninstall -g @tsuyoshi-otake/mcp-filesystem
+# 2. パッケージをアンインストール
+npm uninstall -g otak-mcp-filesystem
 ```
 
 ### 自動起動のみ解除
@@ -230,6 +225,31 @@ npm uninstall -g @tsuyoshi-otake/mcp-filesystem
 # パッケージは残したまま自動起動だけ解除
 otak-mcp-filesystem --uninstall-startup
 ```
+
+### トラブルシューティング
+
+アンインストール時にエラーが発生した場合：
+
+```bash
+# グローバルパッケージの確認
+npm list -g otak-mcp-filesystem
+
+# 強制アンインストール
+npm uninstall -g otak-mcp-filesystem --force
+
+# Windows自動起動の手動削除
+# 以下のフォルダから MCP-Filesystem-Server.lnk を削除
+# %APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
+```
+
+## Windows自動起動
+
+### 自動登録
+
+Windowsでは、初回実行時に自動的にスタートアップフォルダに登録されます。これにより、Windows起動時に自動的にMCPサーバーが開始されます。
+
+- 初回実行時：自動的にスタートアップ登録 + バックグラウンドでサーバー起動
+- 2回目以降：通常のサーバー起動（stdio接続待機）
 
 ### 手動登録オプション
 
