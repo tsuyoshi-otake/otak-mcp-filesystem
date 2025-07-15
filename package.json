@@ -1,10 +1,11 @@
 {
   "name": "@tsuyoshi-otake/mcp-filesystem",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "MCP server for filesystem operations with SSE/HTTP streaming support",
   "main": "dist/index.js",
   "bin": {
-    "mcp-filesystem": "./bin/mcp-filesystem.js"
+    "mcp-filesystem": "./bin/mcp-filesystem.js",
+    "mcp-filesystem-uninstall": "./bin/uninstall.js"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -35,7 +36,8 @@
     "start:http": "node dist/http-server.js",
     "start:mcp": "node dist/mcp-http-server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "preuninstall": "node scripts/uninstall.js"
   },
   "keywords": ["mcp", "model-context-protocol", "filesystem", "sse", "streaming"],
   "author": "Tsuyoshi Otake",

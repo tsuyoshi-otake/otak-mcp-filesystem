@@ -195,10 +195,21 @@ npm start:http   # HTTP版
 
 Windowsでは、初回実行時に自動的にスタートアップフォルダに登録されます。これにより、Windows起動時に自動的にMCPサーバーが開始されます。
 
-### 自動起動の解除
+### アンインストール
 
 ```bash
-# スタートアップから削除
+# 方法1: 自動起動を解除してからアンインストール（推奨）
+mcp-filesystem-uninstall
+npm uninstall -g @tsuyoshi-otake/mcp-filesystem
+
+# 方法2: 直接アンインストール（preuninstallスクリプトが動作する場合）
+npm uninstall -g @tsuyoshi-otake/mcp-filesystem
+```
+
+### 自動起動のみ解除
+
+```bash
+# パッケージは残したまま自動起動だけ解除
 npx @tsuyoshi-otake/mcp-filesystem --uninstall-startup
 ```
 
