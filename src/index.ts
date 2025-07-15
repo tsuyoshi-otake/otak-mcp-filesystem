@@ -205,7 +205,11 @@ async function checkAndSetupAutoStart() {
     `;
     
     try {
-      execSync(`powershell -Command "${script.replace(/"/g, '\\"').replace(/\n/g, ' ')}"`, { stdio: 'pipe' });
+      // PowerShellスクリプトファイルを作成して実行
+      const psScriptPath = path.join(os.tmpdir(), 'create-mcp-shortcut.ps1');
+      await fs.writeFile(psScriptPath, script, 'utf-8');
+      execSync(`powershell -ExecutionPolicy Bypass -File "${psScriptPath}"`, { stdio: 'pipe' });
+      await fs.unlink(psScriptPath);
       console.error('✅ Windows起動時に自動的に開始されるよう設定しました');
       console.error(`📁 許可ディレクトリ: ${allowedDirectory}`);
       console.error('');
@@ -214,16 +218,15 @@ async function checkAndSetupAutoStart() {
       console.error('');
       console.error('🚀 バックグラウンドでサーバーを起動しています...');
       
-      // VBSスクリプトを使ってバックグラウンドで起動
+      // 作成したショートカットを実行
       try {
-        const vbsCommand = `wscript.exe "${vbsPath}" "{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}"`; 
-        execSync(vbsCommand, { stdio: 'ignore', windowsHide: true });
+        execSync(`cmd /c start "" "${shortcutPath}"`, { stdio: 'ignore', windowsHide: true });
         console.error('✅ サーバーがバックグラウンドで起動しました');
         console.error('');
         // 初回登録時は自身を終了
         process.exit(0);
       } catch (error) {
-        console.error('⚠️  バックグラウンド起動に失敗しました');
+        console.error('⚠️  バックグラウンド起動に失敗しました:', error);
         console.error('   PCを再起動すると自動的に開始されます');
       }
     } catch (error) {
