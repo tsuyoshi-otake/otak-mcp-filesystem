@@ -43,24 +43,13 @@ JSON形式の引数で `allowedDirectory` を指定することで、アクセ�
 
 ### グローバルインストール
 
-#### Windows (PowerShell)
-```powershell
-# ワンライナーインストール
-irm https://raw.githubusercontent.com/tsuyoshi-otake/otak-mcp-filesystem/main/install.ps1 | iex
-
-# または手動で
-curl -L https://github.com/tsuyoshi-otake/otak-mcp-filesystem/releases/latest/download/otak-mcp-filesystem.tgz -o otak-mcp-filesystem.tgz
-npm install -g otak-mcp-filesystem.tgz
-```
-
-#### macOS/Linux
 ```bash
-# ワンライナーインストール
-curl -sSL https://raw.githubusercontent.com/tsuyoshi-otake/otak-mcp-filesystem/main/install.sh | bash
+# インストールコマンドを使用（推奨）
+npx install-otak-mcp-filesystem
 
-# または手動で
-curl -L https://github.com/tsuyoshi-otake/otak-mcp-filesystem/releases/latest/download/otak-mcp-filesystem.tgz -o otak-mcp-filesystem.tgz
-npm install -g otak-mcp-filesystem.tgz
+# または手動でリリースからインストール
+# 1. https://github.com/tsuyoshi-otake/otak-mcp-filesystem/releases/latest から otak-mcp-filesystem.tgz をダウンロード
+# 2. npm install -g otak-mcp-filesystem.tgz
 ```
 
 #### 開発版インストール

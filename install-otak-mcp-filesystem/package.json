@@ -1,0 +1,21 @@
+{
+  "name": "install-otak-mcp-filesystem",
+  "version": "1.0.0",
+  "description": "Installer for otak-mcp-filesystem",
+  "bin": {
+    "install-otak-mcp-filesystem": "./install.js"
+  },
+  "files": [
+    "install.js"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsuyoshi-otake/otak-mcp-filesystem.git"
+  },
+  "keywords": ["installer", "mcp", "filesystem"],
+  "author": "Tsuyoshi Otake",
+  "license": "MIT"
+}
