@@ -41,15 +41,25 @@ JSON形式の引数で `allowedDirectory` を指定することで、アクセ�
 
 ## インストール
 
-### グローバルインストール
+### 推奨インストール方法
 
 ```bash
-# 推奨: インストーラーを使用
+# インストーラーを使用（推奨）
 npx github:tsuyoshi-otake/otak-mcp-filesystem/install-otak-mcp-filesystem
+```
 
-# または直接インストール
+このコマンドは：
+- 最新のリリースを自動的にダウンロード
+- グローバルにインストール
+- Claude Desktop の設定例を表示
+
+### その他のインストール方法
+
+#### GitHubから直接インストール
+```bash
 npm install -g github:tsuyoshi-otake/otak-mcp-filesystem
 ```
+**注意**: dist ファイルが含まれているため動作しますが、更新が反映されない場合があります。
 
 #### 開発版インストール
 ```bash
@@ -60,10 +70,15 @@ npm run build
 npm link
 ```
 
-### ローカル開発
+### インストール後の確認
 
 ```bash
-npm install
+# インストールの確認
+npm list -g otak-mcp-filesystem
+
+# 初回実行（Windows）
+otak-mcp-filesystem
+# → 自動起動に登録され、バックグラウンドで起動します
 ```
 
 ## 使用方法
