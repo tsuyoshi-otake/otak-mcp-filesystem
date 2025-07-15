@@ -36,7 +36,7 @@ async function setupWindowsAutoStart(action: string, allowedDirectory: string) {
         $WshShell = New-Object -ComObject WScript.Shell
         $Shortcut = $WshShell.CreateShortcut("${shortcutPath}")
         $Shortcut.TargetPath = "wscript.exe"
-        $Shortcut.Arguments = "\\"${vbsPath}\\" \\"{\\\\\\"allowedDirectory\\\\\\":\\\\\\"${allowedDirectory.replace(/\\/g, '\\\\\\\\')}\\\\\\"}\\""
+        $Shortcut.Arguments = '"${vbsPath}" "{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}"'
         $Shortcut.WorkingDirectory = "${path.dirname(path.dirname(__filename))}"
         $Shortcut.IconLocation = "shell32.dll,3"
         $Shortcut.Description = "MCP Filesystem Server"
@@ -173,7 +173,7 @@ function getSafePath(requestedPath: string): string {
 
 // Windows自動起動のチェックと登録
 async function checkAndSetupAutoStart() {
-  if (process.platform !== 'win32') return;
+  if (process.platform !== 'win32') return false;
   
   const startupPath = path.join(os.homedir(), 'AppData', 'Roaming', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
   const shortcutPath = path.join(startupPath, 'MCP-Filesystem-Server.lnk');
@@ -182,6 +182,7 @@ async function checkAndSetupAutoStart() {
     // ショートカットが存在するかチェック
     await fs.access(shortcutPath);
     // 既に登録済み
+    return false;
   } catch {
     // 未登録なので自動登録
     console.error('🔧 Windows自動起動に登録しています...');
@@ -192,14 +193,14 @@ async function checkAndSetupAutoStart() {
     const vbsPath = path.join(path.dirname(__filename), '..', 'scripts', vbsName);
     
     const script = `
-      $WshShell = New-Object -ComObject WScript.Shell
-      $Shortcut = $WshShell.CreateShortcut("${shortcutPath}")
-      $Shortcut.TargetPath = "wscript.exe"
-      $Shortcut.Arguments = "\\"${vbsPath}\\" \\"{\\\\\\"allowedDirectory\\\\\\":\\\\\\"${allowedDirectory.replace(/\\/g, '\\\\\\\\')}\\\\\\"}\\""
-      $Shortcut.WorkingDirectory = "${path.dirname(path.dirname(__filename))}"
-      $Shortcut.IconLocation = "shell32.dll,3"
-      $Shortcut.Description = "MCP Filesystem Server"
-      $Shortcut.WindowStyle = 7
+      $WshShell = New-Object -ComObject WScript.Shell;
+      $Shortcut = $WshShell.CreateShortcut("${shortcutPath}");
+      $Shortcut.TargetPath = "wscript.exe";
+      $Shortcut.Arguments = '"${vbsPath}" "{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}"';
+      $Shortcut.WorkingDirectory = "${path.dirname(path.dirname(__filename))}";
+      $Shortcut.IconLocation = "shell32.dll,3";
+      $Shortcut.Description = "MCP Filesystem Server";
+      $Shortcut.WindowStyle = 7;
       $Shortcut.Save()
     `;
     
@@ -211,10 +212,27 @@ async function checkAndSetupAutoStart() {
       console.error('🔓 自動起動を解除するには:');
       console.error('   otak-mcp-filesystem --uninstall-startup');
       console.error('');
+      console.error('🚀 バックグラウンドでサーバーを起動しています...');
+      
+      // VBSスクリプトを使ってバックグラウンドで起動
+      try {
+        const vbsCommand = `wscript.exe "${vbsPath}" "{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}"`; 
+        execSync(vbsCommand, { stdio: 'ignore', windowsHide: true });
+        console.error('✅ サーバーがバックグラウンドで起動しました');
+        console.error('');
+        // 初回登録時は自身を終了
+        process.exit(0);
+      } catch (error) {
+        console.error('⚠️  バックグラウンド起動に失敗しました');
+        console.error('   PCを再起動すると自動的に開始されます');
+      }
     } catch (error) {
-      // 登録失敗（権限不足など）- エラーは表示しない
+      // 登録失敗（権限不足など）
+      console.error('⚠️ 自動起動登録エラー:', error);
+      return false;
     }
   }
+  return true;
 }
 
 // 初期化処理
@@ -241,7 +259,14 @@ async function initialize() {
   }
   
   // Windows自動起動のチェックと登録
-  await checkAndSetupAutoStart();
+  const isFirstRun = await checkAndSetupAutoStart();
+  
+  // 初回登録時はメインサーバーを起動しない
+  if (isFirstRun) {
+    return true;  // 初期化は完了したが、サーバーは起動しない
+  }
+  
+  return false;
 }
 
 const server = new Server(
@@ -442,7 +467,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 async function main() {
-  await initialize();
+  const shouldExit = await initialize();
+  if (shouldExit) {
+    // 初回登録時は終了
+    return;
+  }
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('Filesystem MCP server running on stdio');
