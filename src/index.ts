@@ -138,8 +138,7 @@ if (args.length > 0 && args[0].startsWith('--')) {
   }
   
   setupWindowsAutoStart(action, allowedDirectory).then(() => process.exit(0));
-  return;
-}
+} else {
 
 // デフォルトディレクトリ
 const DEFAULT_DIR = path.join(os.homedir(), 'Desktop', 'Otak');
@@ -453,3 +452,5 @@ main().catch((error) => {
   console.error('Server error:', error);
   process.exit(1);
 });
+
+}

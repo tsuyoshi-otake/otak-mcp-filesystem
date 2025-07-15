@@ -1,17 +1,21 @@
 {
   "name": "@tsuyoshi-otake/mcp-filesystem",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "MCP server for filesystem operations with SSE/HTTP streaming support",
   "main": "dist/index.js",
   "bin": {
-    "mcp-filesystem": "./dist/index.js"
+    "mcp-filesystem": "./bin/mcp-filesystem.js"
   },
   "engines": {
     "node": ">=16.0.0"
   },
   "files": [
+    "bin/**/*",
     "dist/**/*",
-    "README.md"
+    "src/**/*",
+    "scripts/**/*",
+    "README.md",
+    "LICENSE"
   ],
   "repository": {
     "type": "git",
@@ -40,7 +44,9 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
     "dotenv": "^17.2.0",
-    "express": "^5.1.0",
+    "express": "^5.1.0"
+  },
+  "optionalDependencies": {
     "tsx": "^4.20.3"
   },
   "devDependencies": {
