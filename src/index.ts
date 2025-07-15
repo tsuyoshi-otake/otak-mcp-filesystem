@@ -8,10 +8,132 @@ import {
 import fs from 'fs/promises';
 import path from 'path';
 import os from 'os';
+import { execSync } from 'child_process';
 
 // 設定
 interface Config {
   allowedDirectory?: string;
+}
+
+// Windows自動起動設定
+async function setupWindowsAutoStart(action: string, allowedDirectory: string) {
+  if (process.platform !== 'win32') {
+    console.error('This feature is only available on Windows');
+    process.exit(1);
+  }
+
+  const startupPath = path.join(os.homedir(), 'AppData', 'Roaming', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
+  const shortcutPath = path.join(startupPath, 'MCP-Filesystem-Server.lnk');
+
+  switch (action) {
+    case '--install-startup':
+      // PowerShellでショートカット作成
+      const script = `
+        $WshShell = New-Object -ComObject WScript.Shell
+        $Shortcut = $WshShell.CreateShortcut("${shortcutPath}")
+        $Shortcut.TargetPath = "node"
+        $Shortcut.Arguments = "${__filename} '{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}'"
+        $Shortcut.WorkingDirectory = "${path.dirname(__filename)}"
+        $Shortcut.IconLocation = "shell32.dll,3"
+        $Shortcut.Description = "MCP Filesystem Server"
+        $Shortcut.Save()
+      `;
+      
+      try {
+        execSync(`powershell -Command "${script.replace(/"/g, '\\"').replace(/\n/g, ' ')}"`, { stdio: 'inherit' });
+        console.log(`✓ Installed to Windows startup folder`);
+        console.log(`  Location: ${shortcutPath}`);
+        console.log(`  Allowed directory: ${allowedDirectory}`);
+      } catch (error) {
+        console.error('Failed to create startup shortcut:', error);
+        process.exit(1);
+      }
+      break;
+
+    case '--uninstall-startup':
+      try {
+        await fs.unlink(shortcutPath);
+        console.log('✓ Removed from Windows startup');
+      } catch (error) {
+        console.error('Not found in startup folder');
+      }
+      break;
+
+    case '--install-task':
+      // タスクスケジューラに登録
+      const taskName = 'MCPFilesystemServer';
+      const taskXml = `<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <Triggers>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+      <UserId>${os.userInfo().username}</UserId>
+    </LogonTrigger>
+  </Triggers>
+  <Settings>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <StartWhenAvailable>true</StartWhenAvailable>
+  </Settings>
+  <Actions>
+    <Exec>
+      <Command>node</Command>
+      <Arguments>"${__filename}" "{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}"</Arguments>
+      <WorkingDirectory>${path.dirname(__filename)}</WorkingDirectory>
+    </Exec>
+  </Actions>
+</Task>`;
+      
+      try {
+        const tempFile = path.join(os.tmpdir(), 'mcp-task.xml');
+        await fs.writeFile(tempFile, taskXml, 'utf16le');
+        execSync(`schtasks /create /tn "${taskName}" /xml "${tempFile}" /f`, { stdio: 'inherit' });
+        await fs.unlink(tempFile);
+        console.log(`✓ Installed to Task Scheduler`);
+        console.log(`  Task name: ${taskName}`);
+        console.log(`  Allowed directory: ${allowedDirectory}`);
+      } catch (error) {
+        console.error('Failed to create scheduled task:', error);
+        process.exit(1);
+      }
+      break;
+
+    case '--uninstall-task':
+      try {
+        execSync('schtasks /delete /tn "MCPFilesystemServer" /f', { stdio: 'inherit' });
+        console.log('✓ Removed from Task Scheduler');
+      } catch (error) {
+        console.error('Task not found');
+      }
+      break;
+
+    default:
+      console.error('Unknown action:', action);
+      process.exit(1);
+  }
+}
+
+// コマンドライン引数をチェック
+const args = process.argv.slice(2);
+if (args.length > 0 && args[0].startsWith('--')) {
+  const action = args[0];
+  const configArg = args[1];
+  let allowedDirectory = path.join(os.homedir(), 'Desktop', 'Otak');
+  
+  if (configArg) {
+    try {
+      const config: Config = JSON.parse(configArg);
+      if (config.allowedDirectory) {
+        allowedDirectory = path.resolve(config.allowedDirectory);
+      }
+    } catch (error) {
+      console.error('Invalid configuration:', error);
+    }
+  }
+  
+  setupWindowsAutoStart(action, allowedDirectory).then(() => process.exit(0));
+  return;
 }
 
 // デフォルトディレクトリ
@@ -45,6 +167,46 @@ function getSafePath(requestedPath: string): string {
   return fullPath;
 }
 
+// Windows自動起動のチェックと登録
+async function checkAndSetupAutoStart() {
+  if (process.platform !== 'win32') return;
+  
+  const startupPath = path.join(os.homedir(), 'AppData', 'Roaming', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
+  const shortcutPath = path.join(startupPath, 'MCP-Filesystem-Server.lnk');
+  
+  try {
+    // ショートカットが存在するかチェック
+    await fs.access(shortcutPath);
+    // 既に登録済み
+  } catch {
+    // 未登録なので自動登録
+    console.error('🔧 Windows自動起動に登録しています...');
+    
+    const script = `
+      $WshShell = New-Object -ComObject WScript.Shell
+      $Shortcut = $WshShell.CreateShortcut("${shortcutPath}")
+      $Shortcut.TargetPath = "node"
+      $Shortcut.Arguments = "${__filename} '{\\"allowedDirectory\\":\\"${allowedDirectory.replace(/\\/g, '\\\\')}\\"}'"
+      $Shortcut.WorkingDirectory = "${path.dirname(__filename)}"
+      $Shortcut.IconLocation = "shell32.dll,3"
+      $Shortcut.Description = "MCP Filesystem Server"
+      $Shortcut.Save()
+    `;
+    
+    try {
+      execSync(`powershell -Command "${script.replace(/"/g, '\\"').replace(/\n/g, ' ')}"`, { stdio: 'pipe' });
+      console.error('✅ Windows起動時に自動的に開始されるよう設定しました');
+      console.error(`📁 許可ディレクトリ: ${allowedDirectory}`);
+      console.error('');
+      console.error('🔓 自動起動を解除するには:');
+      console.error('   npx @tsuyoshi-otake/mcp-filesystem --uninstall-startup');
+      console.error('');
+    } catch (error) {
+      // 登録失敗（権限不足など）- エラーは表示しない
+    }
+  }
+}
+
 // 初期化処理
 async function initialize() {
   // コマンドライン引数から設定を取得
@@ -67,6 +229,9 @@ async function initialize() {
   } catch (error) {
     console.error('Failed to create directory:', error);
   }
+  
+  // Windows自動起動のチェックと登録
+  await checkAndSetupAutoStart();
 }
 
 const server = new Server(

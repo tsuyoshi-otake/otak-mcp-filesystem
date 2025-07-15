@@ -188,3 +188,37 @@ npm run build
 npm start        # stdio版
 npm start:http   # HTTP版
 ```
+
+## Windows自動起動
+
+### 自動登録
+
+Windowsでは、初回実行時に自動的にスタートアップフォルダに登録されます。これにより、Windows起動時に自動的にMCPサーバーが開始されます。
+
+### 自動起動の解除
+
+```bash
+# スタートアップから削除
+npx @tsuyoshi-otake/mcp-filesystem --uninstall-startup
+```
+
+### 手動登録オプション
+
+```bash
+# スタートアップフォルダに手動登録
+npx @tsuyoshi-otake/mcp-filesystem --install-startup
+
+# カスタムディレクトリを指定して登録
+npx @tsuyoshi-otake/mcp-filesystem --install-startup '{"allowedDirectory":"C:/Users/username/Documents/MyProject"}'
+
+# タスクスケジューラに登録（より詳細な制御が必要な場合）
+npx @tsuyoshi-otake/mcp-filesystem --install-task
+
+# タスクスケジューラから削除
+npx @tsuyoshi-otake/mcp-filesystem --uninstall-task
+```
+
+### 登録状態の確認
+
+- **スタートアップフォルダ**: `Win + R` → `shell:startup` でフォルダを開く
+- **タスクスケジューラ**: `taskschd.msc` で確認（タスク名: MCPFilesystemServer）
