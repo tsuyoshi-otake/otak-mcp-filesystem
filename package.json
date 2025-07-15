@@ -22,6 +22,7 @@
     "dev": "nodemon --exec tsx src/index.ts",
     "dev:http": "nodemon --exec tsx src/http-server.ts",
     "dev:mcp": "nodemon --exec tsx src/mcp-http-server.ts",
+    "dev:optimized": "nodemon --exec tsx src/index-optimized.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "start:http": "node dist/http-server.js",
