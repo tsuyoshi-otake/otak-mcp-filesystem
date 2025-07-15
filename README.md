@@ -44,12 +44,11 @@ JSON形式の引数で `allowedDirectory` を指定することで、アクセ�
 ### グローバルインストール
 
 ```bash
-# インストールコマンドを使用（推奨）
-npx install-otak-mcp-filesystem
+# 推奨: インストーラーを使用
+npx github:tsuyoshi-otake/otak-mcp-filesystem/install-otak-mcp-filesystem
 
-# または手動でリリースからインストール
-# 1. https://github.com/tsuyoshi-otake/otak-mcp-filesystem/releases/latest から otak-mcp-filesystem.tgz をダウンロード
-# 2. npm install -g otak-mcp-filesystem.tgz
+# または直接インストール
+npm install -g github:tsuyoshi-otake/otak-mcp-filesystem
 ```
 
 #### 開発版インストール
